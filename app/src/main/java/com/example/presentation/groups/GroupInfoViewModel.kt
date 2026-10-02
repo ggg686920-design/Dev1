@@ -59,6 +59,21 @@ class GroupInfoViewModel(
         }
     }
 
+    fun addMember(userId: String) {
+        viewModelScope.launch {
+            when (container.chatRepository.addMember(conversationId, userId, MemberRole.MEMBER)) {
+                is Resource.Success -> loadMembers()
+                else -> Unit
+            }
+        }
+    }
+
+    fun getCandidateUsers(): List<com.example.data.models.UserProfile> {
+        val currentMemberIds = _uiState.value.members.map { it.userId }.toSet()
+        val allUsers = (container.demoDataManager.sampleUsers + listOf(container.demoDataManager.currentUserProfile)).distinctBy { it.id }
+        return allUsers.filter { !currentMemberIds.contains(it.id) }
+    }
+
     fun updateRole(userId: String, newRole: MemberRole) {
         viewModelScope.launch {
             when (container.chatRepository.updateMemberRole(conversationId, userId, newRole)) {

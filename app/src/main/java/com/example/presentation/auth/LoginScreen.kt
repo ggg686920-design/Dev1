@@ -40,33 +40,19 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
+
     LaunchedEffect(uiState.successUser) {
-        if (uiState.successUser != null) {
+        uiState.successUser?.let {
+            viewModel.resetState()
             onLoginSuccess()
         }
     }
 
     Scaffold(
-        topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .statusBarsPadding(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(
-                    onClick = onNavigateToConfig,
-                    modifier = Modifier.testTag("btn_backend_config")
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.backend_config_title),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
+        topBar = {}
     ) { innerPadding ->
         Column(
             modifier = Modifier

@@ -275,16 +275,6 @@ fun SettingsScreen(
             )
 
             ListItem(
-                headlineContent = { Text(stringResource(R.string.backend_config_title)) },
-                supportingContent = { Text("تهيئة وتوصيل خادم Supabase السحابي (اختياري)") },
-                leadingContent = { Icon(Icons.Default.Cloud, contentDescription = null) },
-                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
-                modifier = Modifier
-                    .clickable(onClick = onNavigateToBackendConfig)
-                    .testTag("item_backend_config")
-            )
-
-            ListItem(
                 headlineContent = { Text("عن تطبيق dev") },
                 supportingContent = { Text("الإصدار v2.000 • استوديو التخصيص الكامل وميزات المراسلة") },
                 leadingContent = { Icon(Icons.Default.Info, contentDescription = null) },

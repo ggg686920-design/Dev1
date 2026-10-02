@@ -239,20 +239,34 @@ class ChatViewModel(
         if (file.exists() && file.length() > 0) {
             viewModelScope.launch {
                 val bytes = file.readBytes()
-                when (val uploadRes = container.storageRepository.uploadMedia("voice-messages", file.name, bytes, "audio/m4a", conversationId)) {
+                val voiceDir = java.io.File(container.context.filesDir, "voice_notes").apply { mkdirs() }
+                val localVoiceFile = java.io.File(voiceDir, file.name)
+                localVoiceFile.writeBytes(bytes)
+                val localUrl = localVoiceFile.toURI().toString()
+
+                val url = when (val uploadRes = container.storageRepository.uploadMedia("voice-messages", file.name, bytes, "audio/m4a", conversationId)) {
+                    is Resource.Success -> uploadRes.data
+                    else -> localUrl
+                }
+
+                when (val res = container.messageRepository.sendMessage(
+                    conversationId = conversationId,
+                    content = "رسالة صوتية",
+                    messageType = MessageType.AUDIO,
+                    attachmentUrl = url,
+                    attachmentName = file.name,
+                    attachmentSize = file.length()
+                )) {
                     is Resource.Success -> {
-                        container.messageRepository.sendMessage(
-                            conversationId = conversationId,
-                            content = "رسالة صوتية",
-                            messageType = MessageType.AUDIO,
-                            attachmentUrl = uploadRes.data,
-                            attachmentName = file.name,
-                            attachmentSize = file.length()
-                        )
-                        loadMessages()
+                        val current = _uiState.value.messages.toMutableList()
+                        if (current.none { it.id == res.data.id }) {
+                            current.add(res.data)
+                            _uiState.value = _uiState.value.copy(messages = current)
+                        }
                     }
                     else -> Unit
                 }
+                loadMessages()
                 file.delete()
             }
         }
@@ -271,22 +285,74 @@ class ChatViewModel(
                 val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
                 val name = "image_${System.currentTimeMillis()}.jpg"
 
-                when (val uploadRes = container.storageRepository.uploadMedia("chat-media", name, bytes, mimeType, conversationId)) {
+                // Always write to local storage as fallback and immediate caching
+                val imagesDir = java.io.File(context.filesDir, "chat_images").apply { mkdirs() }
+                val localFile = java.io.File(imagesDir, name)
+                localFile.writeBytes(bytes)
+                val localUrl = localFile.toURI().toString()
+
+                val finalUrl = when (val uploadRes = container.storageRepository.uploadMedia("chat-media", name, bytes, mimeType, conversationId)) {
+                    is Resource.Success -> uploadRes.data
+                    else -> localUrl
+                }
+
+                when (val res = container.messageRepository.sendMessage(
+                    conversationId = conversationId,
+                    content = "صورة",
+                    messageType = MessageType.IMAGE,
+                    attachmentUrl = finalUrl,
+                    attachmentName = name,
+                    attachmentSize = bytes.size.toLong()
+                )) {
                     is Resource.Success -> {
-                        container.messageRepository.sendMessage(
-                            conversationId = conversationId,
-                            content = "صورة",
-                            messageType = MessageType.IMAGE,
-                            attachmentUrl = uploadRes.data,
-                            attachmentName = name,
-                            attachmentSize = bytes.size.toLong()
-                        )
-                        loadMessages()
+                        val current = _uiState.value.messages.toMutableList()
+                        if (current.none { it.id == res.data.id }) {
+                            current.add(res.data)
+                            _uiState.value = _uiState.value.copy(messages = current)
+                        }
                     }
                     else -> Unit
                 }
+                loadMessages()
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = "فشل إرسال الصورة: ${e.message}")
+            }
+        }
+    }
+
+    fun sendImageBytes(bytes: ByteArray, fileName: String, context: Context) {
+        viewModelScope.launch {
+            try {
+                val imagesDir = java.io.File(context.filesDir, "chat_images").apply { mkdirs() }
+                val localFile = java.io.File(imagesDir, fileName)
+                localFile.writeBytes(bytes)
+                val localUrl = localFile.toURI().toString()
+
+                val finalUrl = when (val uploadRes = container.storageRepository.uploadMedia("chat-media", fileName, bytes, "image/jpeg", conversationId)) {
+                    is Resource.Success -> uploadRes.data
+                    else -> localUrl
+                }
+
+                when (val res = container.messageRepository.sendMessage(
+                    conversationId = conversationId,
+                    content = "صورة ملتقطة",
+                    messageType = MessageType.IMAGE,
+                    attachmentUrl = finalUrl,
+                    attachmentName = fileName,
+                    attachmentSize = bytes.size.toLong()
+                )) {
+                    is Resource.Success -> {
+                        val current = _uiState.value.messages.toMutableList()
+                        if (current.none { it.id == res.data.id }) {
+                            current.add(res.data)
+                            _uiState.value = _uiState.value.copy(messages = current)
+                        }
+                    }
+                    else -> Unit
+                }
+                loadMessages()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(error = "فشل إرسال الصورة الملتقطة: ${e.message}")
             }
         }
     }
@@ -299,24 +365,48 @@ class ChatViewModel(
                 inputStream.close()
                 val mimeType = context.contentResolver.getType(uri) ?: "application/octet-stream"
 
-                when (val uploadRes = container.storageRepository.uploadMedia("attachments", fileName, bytes, mimeType, conversationId)) {
+                val filesDir = java.io.File(context.filesDir, "chat_files").apply { mkdirs() }
+                val localFile = java.io.File(filesDir, fileName)
+                localFile.writeBytes(bytes)
+                val localUrl = localFile.toURI().toString()
+
+                val finalUrl = when (val uploadRes = container.storageRepository.uploadMedia("attachments", fileName, bytes, mimeType, conversationId)) {
+                    is Resource.Success -> uploadRes.data
+                    else -> localUrl
+                }
+
+                when (val res = container.messageRepository.sendMessage(
+                    conversationId = conversationId,
+                    content = fileName,
+                    messageType = MessageType.FILE,
+                    attachmentUrl = finalUrl,
+                    attachmentName = fileName,
+                    attachmentSize = bytes.size.toLong()
+                )) {
                     is Resource.Success -> {
-                        container.messageRepository.sendMessage(
-                            conversationId = conversationId,
-                            content = fileName,
-                            messageType = MessageType.FILE,
-                            attachmentUrl = uploadRes.data,
-                            attachmentName = fileName,
-                            attachmentSize = bytes.size.toLong()
-                        )
-                        loadMessages()
+                        val current = _uiState.value.messages.toMutableList()
+                        if (current.none { it.id == res.data.id }) {
+                            current.add(res.data)
+                            _uiState.value = _uiState.value.copy(messages = current)
+                        }
                     }
                     else -> Unit
                 }
+                loadMessages()
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = "فشل إرسال الملف: ${e.message}")
             }
         }
+    }
+
+    fun sendLocation(latitude: Double, longitude: Double, placeName: String = "") {
+        val mapLink = "https://maps.google.com/?q=$latitude,$longitude"
+        val text = if (placeName.isNotBlank()) {
+            "📍 $placeName\n$mapLink"
+        } else {
+            "📍 موقع جغرافي:\n$mapLink"
+        }
+        sendTextMessage(text)
     }
 
     fun toggleAudioPlayback(url: String) {

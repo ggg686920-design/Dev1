@@ -46,11 +46,16 @@ class ProfileViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun updateProfile(displayName: String, bio: String, avatarUrl: String) {
+    fun resetSaveState() {
+        _uiState.value = _uiState.value.copy(saveSuccess = false, error = null)
+    }
+
+    fun updateProfile(username: String = "", displayName: String, bio: String, avatarUrl: String) {
         _uiState.value = _uiState.value.copy(isSaving = true, error = null, saveSuccess = false)
         viewModelScope.launch {
             val current = _uiState.value.userProfile
             when (val res = container.profileRepository.updateProfile(
+                username = username,
                 displayName = displayName,
                 bio = bio,
                 avatarUrl = avatarUrl,
@@ -78,9 +83,32 @@ class ProfileViewModel(private val container: AppContainer) : ViewModel() {
                 val mime = context.contentResolver.getType(uri) ?: "image/jpeg"
                 val name = "avatar_${System.currentTimeMillis()}.jpg"
 
+                // Always write to local storage as fallback/immediate cache
+                val avatarDir = java.io.File(context.filesDir, "avatars").apply { mkdirs() }
+                val localFile = java.io.File(avatarDir, name)
+                localFile.writeBytes(bytes)
+                val localUri = localFile.toURI().toString()
+
                 when (val res = container.storageRepository.uploadMedia("avatars", name, bytes, mime, container.authRepository.getCurrentUserId())) {
                     is Resource.Success -> onUploaded(res.data)
-                    else -> Unit
+                    else -> onUploaded(localUri)
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun uploadAvatarBytes(bytes: ByteArray, context: Context, onUploaded: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val name = "avatar_${System.currentTimeMillis()}.jpg"
+                val avatarDir = java.io.File(context.filesDir, "avatars").apply { mkdirs() }
+                val localFile = java.io.File(avatarDir, name)
+                localFile.writeBytes(bytes)
+                val localUri = localFile.toURI().toString()
+
+                when (val res = container.storageRepository.uploadMedia("avatars", name, bytes, "image/jpeg", container.authRepository.getCurrentUserId())) {
+                    is Resource.Success -> onUploaded(res.data)
+                    else -> onUploaded(localUri)
                 }
             } catch (_: Exception) {}
         }
@@ -132,6 +160,7 @@ class ProfileViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.authRepository.signOut()
             container.realtime.disconnect()
+            _uiState.value = ProfileUiState()
             onSignedOut()
         }
     }

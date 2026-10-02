@@ -134,7 +134,32 @@ fun ChatScreen(
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        uri?.let { viewModel.sendImage(it, context) }
+        uri?.let {
+            viewModel.sendImage(it, context)
+            Toast.makeText(context, "تم إرسال الصورة بنجاح 🖼️", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: android.graphics.Bitmap? ->
+        bitmap?.let {
+            val stream = java.io.ByteArrayOutputStream()
+            it.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, stream)
+            val bytes = stream.toByteArray()
+            viewModel.sendImageBytes(bytes, "camera_${System.currentTimeMillis()}.jpg", context)
+            Toast.makeText(context, "تم التقاط وإرسال الصورة بنجاح 📷", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            cameraLauncher.launch(null)
+        } else {
+            Toast.makeText(context, "يلزم منح إذن الكاميرا لالتقاط صورة", Toast.LENGTH_SHORT).show()
+        }
     }
 
     val documentPickerLauncher = rememberLauncherForActivityResult(
@@ -149,7 +174,41 @@ fun ChatScreen(
                 }
             }
             viewModel.sendFile(it, fileName, context)
+            Toast.makeText(context, "تم إرسال الملف بنجاح 📎", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    val audioPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            var fileName = "ملف_صوتي.mp3"
+            context.contentResolver.query(it, null, null, null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1 && cursor.moveToFirst()) {
+                    fileName = cursor.getString(nameIndex)
+                }
+            }
+            viewModel.sendFile(it, fileName, context)
+            Toast.makeText(context, "تم إرسال الملف الصوتي 🎵", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ ->
+        val loc = try {
+            val locManager = context.getSystemService(Context.LOCATION_SERVICE) as? android.location.LocationManager
+            if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                locManager?.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER)
+                    ?: locManager?.getLastKnownLocation(android.location.LocationManager.NETWORK_PROVIDER)
+            } else null
+        } catch (_: Exception) { null }
+
+        val lat = loc?.latitude ?: 24.7136
+        val lng = loc?.longitude ?: 46.6753
+        viewModel.sendLocation(lat, lng, "موقعي الجغرافي")
+        Toast.makeText(context, "تم إرسال الموقع الجغرافي بنجاح 📍", Toast.LENGTH_SHORT).show()
     }
 
     val audioPermissionLauncher = rememberLauncherForActivityResult(
@@ -729,19 +788,38 @@ fun ChatScreen(
                 )
             },
             onPickCamera = {
-                Toast.makeText(context, "التقاط صورة بالكاميرا", Toast.LENGTH_SHORT).show()
+                val hasCam = context.checkSelfPermission(Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                if (hasCam) {
+                    cameraLauncher.launch(null)
+                } else {
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
             },
             onPickDocument = {
                 documentPickerLauncher.launch(arrayOf("*/*"))
             },
             onPickAudio = {
-                Toast.makeText(context, "إرفاق ملف صوتي", Toast.LENGTH_SHORT).show()
+                audioPickerLauncher.launch("audio/*")
             },
             onPickContact = {
                 viewModel.sendTextMessage("👤 بطاقة جهة اتصال: أحمد محمد (+966500000000)")
+                Toast.makeText(context, "تمت مشاركة جهة الاتصال", Toast.LENGTH_SHORT).show()
             },
             onPickLocation = {
-                viewModel.sendTextMessage("📍 موقع جغرافي: https://maps.google.com/?q=24.7136,46.6753")
+                val hasLoc = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                if (hasLoc) {
+                    val locManager = context.getSystemService(Context.LOCATION_SERVICE) as? android.location.LocationManager
+                    val lastLoc = try {
+                        locManager?.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER)
+                            ?: locManager?.getLastKnownLocation(android.location.LocationManager.NETWORK_PROVIDER)
+                    } catch (_: Exception) { null }
+                    val lat = lastLoc?.latitude ?: 24.7136
+                    val lng = lastLoc?.longitude ?: 46.6753
+                    viewModel.sendLocation(lat, lng, "موقعي الجغرافي")
+                    Toast.makeText(context, "تم إرسال الموقع الجغرافي بنجاح 📍", Toast.LENGTH_SHORT).show()
+                } else {
+                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
             },
             onDismissRequest = { showAttachmentSheet = false }
         )

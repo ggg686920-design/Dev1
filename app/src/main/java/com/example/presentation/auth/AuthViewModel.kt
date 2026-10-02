@@ -77,4 +77,8 @@ class AuthViewModel(private val container: AppContainer) : ViewModel() {
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
+
+    fun resetState() {
+        _uiState.value = AuthUiState(isConfigured = container.config.isConfigured())
+    }
 }

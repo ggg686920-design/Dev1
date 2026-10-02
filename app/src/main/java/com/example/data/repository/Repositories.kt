@@ -52,6 +52,7 @@ class AuthRepository(
                 isOnline = true
             )
             demo.currentUserProfile = customDemoProfile
+            demo.registerOrUpdateUser(customDemoProfile)
             return@withContext Resource.Success(customDemoProfile)
         }
 
@@ -92,6 +93,7 @@ class AuthRepository(
                     displayName = displayName.trim(),
                     isOnline = true
                 )
+                demo.registerOrUpdateUser(profile)
                 Resource.Success(profile)
             } else {
                 Resource.Error("Could not retrieve user ID from response")
@@ -193,15 +195,21 @@ class ProfileRepository(
         val clean = query.trim().removePrefix("@").lowercase()
         if (clean.isBlank()) return@withContext Resource.Success(emptyList())
 
+        val currentUserId = config.getCurrentUserId()
+        val allUsers = (demo.sampleUsers + listOf(demo.currentUserProfile)).distinctBy { it.id }
+
         if (config.isDemoMode()) {
-            val matched = demo.sampleUsers.filter {
-                it.username.contains(clean, ignoreCase = true) || it.displayName.contains(clean, ignoreCase = true)
+            val matched = allUsers.filter { user ->
+                user.id != currentUserId && (
+                    user.username.lowercase().contains(clean) ||
+                    user.displayName.lowercase().contains(clean) ||
+                    clean.contains(user.username.lowercase())
+                )
             }
             return@withContext Resource.Success(matched)
         }
 
         try {
-            val currentUserId = config.getCurrentUserId()
             val array = client.postgrestGet(
                 "profiles?or=(username.ilike.*$clean*,display_name.ilike.*$clean*)&id=neq.$currentUserId&limit=25"
             )
@@ -209,16 +217,30 @@ class ProfileRepository(
             for (i in 0 until array.length()) {
                 users.add(UserProfile.fromJson(array.getJSONObject(i)))
             }
-            Resource.Success(users)
+            if (users.isEmpty()) {
+                val matched = allUsers.filter { user ->
+                    user.id != currentUserId && (
+                        user.username.lowercase().contains(clean) ||
+                        user.displayName.lowercase().contains(clean)
+                    )
+                }
+                Resource.Success(matched)
+            } else {
+                Resource.Success(users)
+            }
         } catch (e: Exception) {
-            val matched = demo.sampleUsers.filter {
-                it.username.contains(clean, ignoreCase = true) || it.displayName.contains(clean, ignoreCase = true)
+            val matched = allUsers.filter { user ->
+                user.id != currentUserId && (
+                    user.username.lowercase().contains(clean) ||
+                    user.displayName.lowercase().contains(clean)
+                )
             }
             Resource.Success(matched)
         }
     }
 
     suspend fun updateProfile(
+        username: String = "",
         displayName: String,
         bio: String,
         avatarUrl: String,
@@ -226,8 +248,10 @@ class ProfileRepository(
         photoVisibility: String = "EVERYONE",
         readReceipts: Boolean = true
     ): Resource<UserProfile> = withContext(Dispatchers.IO) {
+        val cleanUsername = username.trim().removePrefix("@").lowercase().ifBlank { demo.currentUserProfile.username }
         if (config.isDemoMode()) {
             demo.currentUserProfile = demo.currentUserProfile.copy(
+                username = cleanUsername,
                 displayName = displayName.trim(),
                 bio = bio.trim(),
                 avatarUrl = avatarUrl.trim(),
@@ -235,12 +259,14 @@ class ProfileRepository(
                 photoVisibility = photoVisibility,
                 readReceiptsEnabled = readReceipts
             )
+            demo.registerOrUpdateUser(demo.currentUserProfile)
             return@withContext Resource.Success(demo.currentUserProfile)
         }
 
         val currentUserId = config.getCurrentUserId() ?: return@withContext Resource.Error("User not logged in")
         try {
             val payload = JSONObject().apply {
+                if (cleanUsername.isNotBlank()) put("username", cleanUsername)
                 put("display_name", displayName.trim())
                 put("bio", bio.trim())
                 if (avatarUrl.isNotBlank()) put("avatar_url", avatarUrl)
@@ -250,7 +276,9 @@ class ProfileRepository(
             }
             val resArray = client.postgrestPatch("profiles?id=eq.$currentUserId", payload)
             if (resArray.length() > 0) {
-                Resource.Success(UserProfile.fromJson(resArray.getJSONObject(0)))
+                val updated = UserProfile.fromJson(resArray.getJSONObject(0))
+                demo.registerOrUpdateUser(updated)
+                Resource.Success(updated)
             } else {
                 getProfile(currentUserId)
             }

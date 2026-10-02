@@ -9,7 +9,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Shield
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -128,13 +131,100 @@ fun GroupInfoScreen(
                 )
             }
 
-            Text(
-                text = "الأعضاء (${uiState.members.size})",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
+            val context = LocalContext.current
+            var showAddMemberDialog by remember { mutableStateOf(false) }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "الأعضاء (${uiState.members.size})",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                FilledTonalButton(
+                    onClick = { showAddMemberDialog = true },
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    modifier = Modifier.testTag("btn_add_group_member")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PersonAdd,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("إضافة عضو")
+                }
+            }
+
+            if (showAddMemberDialog) {
+                val candidates = remember(uiState.members) { viewModel.getCandidateUsers() }
+                AlertDialog(
+                    onDismissRequest = { showAddMemberDialog = false },
+                    title = { Text("إضافة عضو إلى المجموعة") },
+                    text = {
+                        if (candidates.isEmpty()) {
+                            Text("جميع جهات الاتصال والأصدقاء مضافون بالفعل إلى هذه المجموعة.")
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = 300.dp)
+                            ) {
+                                items(candidates, key = { it.id }) { candidate ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RaseelAvatar(
+                                            name = candidate.displayName,
+                                            avatarUrl = candidate.avatarUrl,
+                                            size = 38.dp
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = candidate.displayName,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                            Text(
+                                                text = "@${candidate.username}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        Button(
+                                            onClick = {
+                                                viewModel.addMember(candidate.id)
+                                                Toast.makeText(context, "تمت إضافة ${candidate.displayName} بنجاح", Toast.LENGTH_SHORT).show()
+                                                showAddMemberDialog = false
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                            modifier = Modifier.height(34.dp)
+                                        ) {
+                                            Text("إضافة", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showAddMemberDialog = false }) {
+                            Text("إغلاق")
+                        }
+                    }
+                )
+            }
 
             LazyColumn(
                 modifier = Modifier

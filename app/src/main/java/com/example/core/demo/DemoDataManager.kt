@@ -365,6 +365,104 @@ class DemoDataManager {
             )
         )
         conversationMessages[convGroupId] = groupMessages
+
+        // 5. Global Community Group (المجموعة العامة لجميع مستخدمي التطبيق)
+        val convGlobalId = "conv-global-community"
+        val globalGroupConv = Conversation(
+            id = convGlobalId,
+            type = ConversationType.GROUP,
+            title = "المجموعة العامة لجميع المستخدمين 🌐",
+            avatarUrl = "",
+            createdBy = "system",
+            lastMessageText = "مرحباً بكم جميعاً في المجموعة العامة للتطبيق! تواصلوا وتبادلوا الرسائل بكل حرية 💬",
+            lastMessageAt = "2026-10-02T13:45:00Z",
+            isPinned = true,
+            isMuted = false,
+            unreadCount = 0,
+            pinnedMessageId = "msg-global-welcome",
+            groupPermissions = GroupPermissions(
+                canSendMessages = true,
+                canSendMedia = true,
+                canAddMembers = true,
+                canEditInfo = false,
+                canPinMessages = true
+            )
+        )
+        // Add global community group at the very top of conversations!
+        conversations.add(0, globalGroupConv)
+
+        val globalMembers = mutableListOf(
+            ConversationMember("gm-g-0", convGlobalId, currentUserId, MemberRole.MEMBER, "2026-10-01T00:00:00Z", profile = currentUserProfile),
+            ConversationMember("gm-g-1", convGlobalId, sara.id, MemberRole.ADMIN, "2026-10-01T00:00:00Z", profile = sara),
+            ConversationMember("gm-g-2", convGlobalId, khaled.id, MemberRole.MEMBER, "2026-10-01T00:00:00Z", profile = khaled),
+            ConversationMember("gm-g-3", convGlobalId, mariam.id, MemberRole.MEMBER, "2026-10-01T00:00:00Z", profile = mariam),
+            ConversationMember("gm-g-4", convGlobalId, omar.id, MemberRole.MEMBER, "2026-10-01T00:00:00Z", profile = omar)
+        )
+        conversationMembers[convGlobalId] = globalMembers
+
+        val globalMessages = mutableListOf(
+            Message(
+                id = "msg-global-welcome",
+                conversationId = convGlobalId,
+                senderId = sara.id,
+                content = "🌟 أهلاً وسهلاً بجميع مستخدمي التطبيق في المجموعة العامة الرسمية! يمكن لأي شخص ينشئ حساباً المشاركة هنا مباشرة.",
+                messageType = MessageType.TEXT,
+                status = MessageStatus.READ,
+                createdAt = "2026-10-02T10:00:00Z",
+                senderProfile = sara,
+                isPinned = true,
+                reactions = listOf(
+                    MessageReaction("❤️", currentUserId, "أنت"),
+                    MessageReaction("👋", khaled.id, "خالد")
+                )
+            ),
+            Message(
+                id = "msg-global-2",
+                conversationId = convGlobalId,
+                senderId = khaled.id,
+                content = "مرحباً بالجميع! التطبيق سريع جداً ويدعم البحث باليوزر والتخصيص الكامل 🚀",
+                messageType = MessageType.TEXT,
+                status = MessageStatus.READ,
+                createdAt = "2026-10-02T12:00:00Z",
+                senderProfile = khaled
+            ),
+            Message(
+                id = "msg-global-3",
+                conversationId = convGlobalId,
+                senderId = currentUserId,
+                content = "مرحباً بكم جميعاً في المجموعة العامة للتطبيق! تواصلوا وتبادلوا الرسائل بكل حرية 💬",
+                messageType = MessageType.TEXT,
+                status = MessageStatus.READ,
+                createdAt = "2026-10-02T13:45:00Z",
+                senderProfile = currentUserProfile
+            )
+        )
+        conversationMessages[convGlobalId] = globalMessages
+    }
+
+    fun registerOrUpdateUser(user: UserProfile) {
+        val existingIndex = sampleUsers.indexOfFirst { it.id == user.id || it.username.equals(user.username, ignoreCase = true) }
+        if (existingIndex != -1) {
+            sampleUsers[existingIndex] = user
+        } else {
+            sampleUsers.add(user)
+        }
+
+        // Also ensure user is in the global community group
+        val convGlobalId = "conv-global-community"
+        val members = conversationMembers.getOrPut(convGlobalId) { mutableListOf() }
+        if (members.none { it.userId == user.id }) {
+            members.add(
+                ConversationMember(
+                    id = "gm-g-${UUID.randomUUID()}",
+                    conversationId = convGlobalId,
+                    userId = user.id,
+                    role = MemberRole.MEMBER,
+                    joinedAt = "2026-10-02T13:50:00Z",
+                    profile = user
+                )
+            )
+        }
     }
 
     fun saveDraft(conversationId: String, draftText: String) {

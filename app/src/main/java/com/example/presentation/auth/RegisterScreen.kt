@@ -41,8 +41,13 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
+
     LaunchedEffect(uiState.successUser) {
-        if (uiState.successUser != null) {
+        uiState.successUser?.let {
+            viewModel.resetState()
             onRegisterSuccess()
         }
     }

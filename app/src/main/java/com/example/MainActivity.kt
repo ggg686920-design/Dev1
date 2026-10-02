@@ -156,6 +156,7 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("backend_config")
                                 },
                                 onSignedOut = {
+                                    authViewModel.resetState()
                                     navController.navigate("login") {
                                         popUpTo(0) { inclusive = true }
                                     }

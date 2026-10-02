@@ -87,8 +87,8 @@ fun SearchScreen(
                 uiState.results.isEmpty() && uiState.query.isNotBlank() -> {
                     RaseelEmptyState(
                         icon = Icons.Default.Search,
-                        title = "No users found",
-                        description = "Try searching for a different @username or name",
+                        title = "لم يتم العثور على نتائج",
+                        description = "تأكد من كتابة اسم المستخدم (@username) أو الاسم بشكل صحيح",
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -96,8 +96,8 @@ fun SearchScreen(
                 uiState.query.isBlank() -> {
                     RaseelEmptyState(
                         icon = Icons.Default.Search,
-                        title = "Search Contacts",
-                        description = "Type a name or @username to start a conversation",
+                        title = "البحث عن الأصدقاء والمستخدمين",
+                        description = "اكتب اسم المستخدم @username أو الاسم لبدء محادثة فورية",
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
