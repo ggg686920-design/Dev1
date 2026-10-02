@@ -1,114 +1,96 @@
-# Raseel Messenger (تطبيق رسيل للمراسلة) — v1.000
+# dev Messenger (تطبيق ديف للمراسلة الفورية وفائقة التخصيص) — v2.000
 
-تطبيق مراسلة فوري حديث، متكامل، وآمن مبني بنظام Android Native باستخدام Kotlin و Jetpack Compose، مع تكامل كامل مع منصة Supabase (قاعدة بيانات PostgreSQL، المصادقة Auth، التخزين Storage، والاتصال اللحظي Realtime عبر WebSockets).
+تطبيق مراسلة فوري حديث، متكامل، وآمن وفائق التخصيص مبني بنظام Android Native باستخدام Kotlin و Jetpack Compose (Material 3)، مع محرك ثيمات متقدم يتحكم بأكثر من 90% من مظهر الواجهة، ومتجر أصول سحابي، وتكامل اختياري مع منصة Supabase (أو العمل بالوضع المحلي Demo Mode فورياً).
 
 ---
 
-## 1. Project Overview (نظرة عامة)
+## 1. نظرة عامة (Project Overview)
 
-- **اسم التطبيق:** رسيل (Raseel)
-- **الإصدار:** v1.000 (versionCode: 1000)
+- **اسم التطبيق:** dev
+- **الإصدار:** v2.000 (versionCode: 2000)
 - **المنصة:** Android 7.0+ (API 24+)
-- **نوع الواجهة:** Jetpack Compose (Material 3)
-- **دعم اللغة والاتجاه:** العربية الافتراضية مع دعم RTL الكامل وإمكانية التبديل إلى الإنجليزية
-- **الباك إند:** Supabase (Auth + PostgREST + Realtime WebSockets + Storage)
+- **نوع الواجهة:** Jetpack Compose (Material Design 3)
+- **دعم اللغة والاتجاه:** دعم كامل للعربية (RTL الافتراضي) والإنجليزية (LTR)
+- **محرك التخصيص:** Dev Theme & Customization Engine v2
+- **الباك إند:** Supabase (Auth + PostgreSQL + Realtime WebSockets + Storage) مع وضع تجريبي محلي متكامل Offline/Demo Mode يعمل فورياً بدون إعدادات
 
 ---
 
-## 2. المميزات الرئيسية في الإصدار v1.000
+## 2. المميزات الرئيسية في التطبيق
 
-1. **المصادقة (Authentication):**
-   - تسجيل حساب جديد (الاسم الظاهر، اسم المستخدم الفريد `@username`، البريد الإلكتروني، كلمة المرور).
-   - تسجيل الدخول وحفظ الجلسة تلقائياً (Session Persistence).
-   - تسجيل الخروج الآمن وإنهاء الجلسة.
+### أ. محرك التخصيص الفائق (Ultra-Customization Studio):
+1. **32+ ثيم مدمج ومصمم بالكامل:**
+   - Dark, Light, AMOLED, Cyberpunk, Gaming, Glassmorphism, Luxury, Minimal, Space, Neon, Sunset, Forest, Retro, Abstract, وغيرها.
+2. **32+ خلفية ونمط تفاعلي (Wallpapers & Video Loops):**
+   - تدرجات خطية ودائرية، شبكات عقدية متحركة، دوائر وألياف تقنية، فضاء ونجوم، مع تحكم في تقليل الحركة (Reduce Motion).
+3. **10+ أنماط أيقونات متطورة (Icon Packs):**
+   - Minimal, Outline, Filled, Rounded, Glass, Neon, Gradient, Gaming, Pixel, Luxury.
+4. **مصمم فقاعات الشات المتقدم (Bubble Designer):**
+   - تخصيص ألوان الرسائل الواردة والصادرة، هوامش الفقاعات، نصف القطر، الذيل، الإطارات والظلال.
+5. **مصمم شاشة الهوم وعناصر الواجهة (Home & UI Designer):**
+   - شريط التنقل (Pill, Floating, Glass, Minimal, Classic)، أنماط الأزرار، وحقول الإدخال.
+6. **متجر الأصول السحابي (Online Asset Store):**
+   - جلب وتصفح الثيمات والخلفيات وحزم الأيقونات والديكورات من مصادر عامة ومرخصة، مع نظام التنزيل وإدارة التخزين المؤقت (Cache Manager).
+7. **الاستيراد والتصدير:**
+   - تصدير واستيراد الثيمات بصيغة `.devtheme` كـ JSON، وزر توليد ثيم عشوائي متناسق (Surprise Me)، والمعاينة الحية الفورية (Live Preview).
 
-2. **المحادثات الفردية والجماعية (Direct & Group Chats):**
-   - محادثات فردية مباشرة تمنع تكرار المحادثات لنفس المستخدمين.
-   - محادثات مجموعات مع تحديد اسم المجموعة وصورتها واختيار الأعضاء.
-   - نظام صلاحيات وإدارة المجموعات (Owner, Admin, Member): تعيين المشرفين، إزالة الأعضاء، مغادرة المجموعة.
-
-3. **المراسلة اللحظية (Realtime Messaging):**
-   - اتصال لحظي WebSocket مباشر مع خادم Supabase Realtime عبر Phoenix Channels.
-   - وصول الرسائل بدون الحاجة لعمل Refresh.
-   - تحديثات الواجهة المتفائلة (Optimistic UI) مع معالجة عدم تكرار الرسائل.
-
-4. **أنواع الرسائل والوسائط (Media & Attachments):**
-   - **الرسائل النصية:** تدعم الرد، النسخ، والتعديل.
-   - **الصور:** اختيار من المعرض عبر Android Photo Picker الآمن، رفعها إلى Supabase Storage، وعرضها فورياً.
-   - **الملفات والمستندات:** اختيار الملفات، عرض اسمها وحجمها، ورفعها.
-   - **الرسائل الصوتية:** تسجيل صوتي عبر الميكروفون مع عداد زمني، رفع تلقائي، ومشغل صوت تفاعلي مع شريط تقدم.
-
-5. **حالات وتفاعل الرسائل (Message Status & Actions):**
-   - مؤشرات التسليم والقراءة الحقيقية: ✓ Sent، ✓✓ Delivered، ✓✓ Read (باللون السماوي).
-   - تعديل الرسائل النصية الخاصة بالمرسل فقط مع إظهار وسم `معدلة`.
-   - حذف الرسائل: "حذف لدي فقط" أو "حذف للجميع" مع إظهار "تم حذف هذه الرسالة".
-   - الرد على الرسائل (Reply) مع شريط معاينة الرسالة المردود عليها.
-
-6. **إدارة الخصوصية وجهات الاتصال:**
-   - حظر وإلغاء حظر المستخدمين (Blocking).
-   - تثبيت المحادثات في أعلى القائمة (Pinning).
-   - كتم الإشعارات للمحادثات (Muting).
-   - التحكم في ظهور آخر ظهور (Last Seen) وصورة الحساب ومؤشرات القراءة.
-
-7. **الإشعارات وتخصيص المظهر:**
-   - قنوات إشعارات أندرويد (Notification Channel: Messages).
-   - دعم الوضع الداكن (Dark Mode) والفاتح (Light Mode).
-   - إمكانية ضبط وتعديل مفاتيح ورابط Supabase مباشرة من داخل شاشة الإعدادات.
+### ب. وظائف المراسلة المتقدمة:
+1. **المحادثات الفردية والجماعية:**
+   - محادثات مباشرة بين المستخدمين، ومجموعات مع صلاحيات المشرفين والأعضاء وصور مخصصة.
+2. **المراسلة اللحظية والوسائط المتعددة:**
+   - رسائل نصية، صور وفيديوهات ومستندات، ورسائل صوتية مع مشغل صوت تفاعلي وشريط تقدم.
+   - حالات تسليم وقراءة حقيقية: ✓ Sent, ✓✓ Delivered, ✓✓ Read.
+   - تعديل الرسائل وحذفها (لدي فقط أو للجميع).
+3. **لوحة الرموز التعبيرية المحسنة (Emoji Picker):**
+   - اختيار متعدد وسلس للرموز التعبيرية بدون إغلاق عشوائي، مع زر تبديل فوري للوحة المفاتيح وزر حذف الرمز الأخير (Backspace).
+4. **الخصوصية والبحث:**
+   - حظر وإلغاء حظر المستخدمين، تثبيت المحادثات، وكتم الإشعارات، والبحث المتقدم في الرسائل.
 
 ---
 
-## 3. Architecture (الهيكلية)
+## 3. الهيكلية المعمارية (Architecture)
 
-تم بناء المشروع باتباع أفضل الممارسات:
-- **Clean Architecture + MVVM + Repository Pattern:**
-  - `core/`: الاتصال بالشبكة (`SupabaseClient`, `SupabaseRealtimeManager`)، الإشعارات (`NotificationHelper`)، الوسائط الصوتية (`AudioRecorderManager`, `AudioPlayerManager`)، وتنسيق التواريخ والنتائج (`DateUtils`, `Resource`).
-  - `data/`: نماذج البيانات (`Models.kt`) ومستودعات البيانات (`Repositories.kt` لـ Auth, Chat, Message, Storage, Profile, Block).
-  - `presentation/`: شاشات العرض وحالات الواجهة لكل من (auth, home, chat, groups, search, profile, settings).
-
----
-
-## 4. Supabase Setup & Database Migrations (Phase 2 Backend)
-
-تم تنظيم الـ Backend بشكل معياري احترافي من خلال ملفات الهجرة في مجلد `supabase/migrations/`:
-- `001_initial_schema.sql`: الجداول الأساسية والقيود والمفاتيح الأجنبية.
-- `002_constraints_indexes.sql`: فهارس الأداء السريعة وقيود أسماء المستخدمين.
-- `003_functions_triggers.sql`: دوال ومحفزات الأمان والمحادثات المباشرة الذرية والتحديث التلقائي.
-- `004_rls_policies.sql`: سياسات أمان Row Level Security لكافة الجداول الـ 11.
-- `005_storage.sql`: إعداد حاويات التخزين وسياسات الأمان المخصصة للمسارات.
-- `006_realtime.sql`: تفعيل الـ Realtime للجداول المطلوبة.
-
-كما يتوفر ملف شامل ومدمج لتشغيله بنقرة واحدة في محرر Supabase:
-`supabase/schema.sql`
-
-للتوثيق التفصيلي الشامل لجميع الجداول والدوال وسياسات الأمان، يرجى مراجعة ملف:
-`SUPABASE.md`
+مبني وفق مبادئ **Clean Architecture + MVVM + Repository Pattern**:
+- `core/customization/`: محرك التخصيص والثيمات، مصير الخلفيات، أنماط الأيقونات، وإدارة التخزين.
+- `core/assets/`: متجر الأصول السحابي، إدارة التنزيلات والذاكرة المؤقتة.
+- `core/network/`: اتصال Supabase و Realtime WebSockets عبر OkHttp.
+- `data/models/`: نماذج البيانات والرسائل والمحادثات والملفات الشخصية.
+- `data/repository/`: مستودعات البيانات مع طبقة التبديل الشفاف بين Supabase و DemoDataManager.
+- `presentation/`: واجهات Jetpack Compose موزعة على وحدات (customization, chat, home, auth, groups, settings, contacts).
 
 ---
 
-## 5. Environment Variables & App Configuration
+## 4. التشغيل والبناء (Build & Run)
 
-في ملف `.env` (أو من خلال شاشة إعدادات الخادم في التطبيق):
-```env
-SUPABASE_URL=https://your-project-id.supabase.co
-SUPABASE_ANON_KEY=your-anon-public-key
-```
+### المتطلبات:
+- Android Studio Ladybug / Meerkat أو أحدث
+- JDK 17 أو 21
+- Android SDK 36 (minSdk 24)
 
-> **ملاحظة أمان هامة:** التطبيق يستخدم حصراً المفتاح العام `anon key` مع تفعيل RLS في قاعدة البيانات، ولا يتم وضع `service_role key` نهائياً داخل التطبيق.
-
----
-
-## 6. Build & Packaging Instructions
-
-- للتحقق والتجميع:
+### الأوامر عبر Gradle:
+- **فحص وبناء حزمة التصحيح (Debug APK):**
   ```bash
   gradle :app:assembleDebug
   ```
-- لتشغيل الاختبارات:
+  الملف الناتج: `app/build/outputs/apk/debug/app-debug.apk`
+
+- **تشغيل الاختبارات (Local Unit & Robolectric Tests):**
   ```bash
   gradle :app:testDebugUnitTest
   ```
-- لبناء APK الإصدار النهائي:
+
+- **بناء حزمة الإصدار (Release APK):**
   ```bash
   gradle :app:assembleRelease
   ```
-  الملف الناتج يكون في: `app/build/outputs/apk/release/app-release-unsigned.apk`
+
+---
+
+## 5. جاهزية الرفع على GitHub (GitHub Readiness Checklist)
+
+- [x] تم استبعاد ملفات البناء المؤقتة و `.gradle` و `.env` و `debug.keystore` في `.gitignore`.
+- [x] تم توفير ملف `.env.example` كقالب آمن بدون مفاتيح سرية مكشوفة.
+- [x] الكود البرمجي بالكامل لا يحتوي على مفاتيح سرية مضمنة، ويعتمد على Secrets Gradle Plugin.
+- [x] التطبيق يعمل تلقائياً وبسلاسة في الوضع التجريبي (Demo Mode) فور تثبيته دون اشتراط إدخال بيانات سحابية.
+- [x] جميع اختبارات الكود والوحدات تجتاز بنجاح (`testDebugUnitTest` PASSED).
+- [x] البناء والترجمة ناجحان 100% (`assembleDebug` SUCCESSFUL).

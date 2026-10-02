@@ -1,8 +1,10 @@
 package com.example.presentation.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,12 +15,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.R
-import com.example.core.settings.AppSettingsManager
 import com.example.presentation.common.RaseelAvatar
 import com.example.presentation.profile.ProfileViewModel
 
@@ -32,6 +37,7 @@ fun SettingsScreen(
     onToggleLanguage: (Boolean) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
+    onNavigateToCustomizationStudio: () -> Unit,
     onNavigateToPrivacy: () -> Unit,
     onNavigateToAppearance: () -> Unit,
     onNavigateToStorage: () -> Unit,
@@ -66,7 +72,7 @@ fun SettingsScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
                     .clickable(onClick = onNavigateToEditProfile)
                     .testTag("card_user_profile")
             ) {
@@ -89,7 +95,7 @@ fun SettingsScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "@${uiState.userProfile?.username ?: ""}",
+                            text = "@${uiState.userProfile?.username ?: "dev_user"}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -110,6 +116,75 @@ fun SettingsScreen(
                 }
             }
 
+            // PRIMARY HIGHLIGHT: Customization Studio (90%)
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clickable(onClick = onNavigateToCustomizationStudio)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                    Color(0xFF7C3AED)
+                                )
+                            )
+                        )
+                        .padding(18.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = Color.White.copy(alpha = 0.2f),
+                            modifier = Modifier.size(52.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Default.Palette, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(14.dp))
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "مركز التخصيص الفائق",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Surface(
+                                    color = Color.Black.copy(alpha = 0.35f),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text("90% ✨", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "32+ ثيم، 32+ خلفية، مصمم الفقاعات، 10+ أنماط أيقونات، متجر ثيمات وتصدير.",
+                                color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 12.sp,
+                                lineHeight = 16.sp
+                            )
+                        }
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
+
             // Section: Appearance & Theming
             Text(
                 text = "التخصيص والمظهر",
@@ -120,9 +195,9 @@ fun SettingsScreen(
             )
 
             ListItem(
-                headlineContent = { Text("المظهر والألوان والخلفيات") },
-                supportingContent = { Text("السمة، الألوان المخصصة، حجم الخط، وفقاعات الرسائل") },
-                leadingContent = { Icon(Icons.Default.Palette, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                headlineContent = { Text("المظهر السريع والخطوط") },
+                supportingContent = { Text("السمة، الألوان الأساسية، وحجم الخط") },
+                leadingContent = { Icon(Icons.Default.ColorLens, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onNavigateToAppearance)
             )
@@ -201,7 +276,7 @@ fun SettingsScreen(
 
             ListItem(
                 headlineContent = { Text(stringResource(R.string.backend_config_title)) },
-                supportingContent = { Text("تهيئة وتوصيل خادم Supabase السحابي") },
+                supportingContent = { Text("تهيئة وتوصيل خادم Supabase السحابي (اختياري)") },
                 leadingContent = { Icon(Icons.Default.Cloud, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
                 modifier = Modifier
@@ -210,8 +285,8 @@ fun SettingsScreen(
             )
 
             ListItem(
-                headlineContent = { Text("حول تطبيق رسيل") },
-                supportingContent = { Text("الإصدار v1.000 • تفاصيل النظام والمميزات") },
+                headlineContent = { Text("عن تطبيق dev") },
+                supportingContent = { Text("الإصدار v2.000 • استوديو التخصيص الكامل وميزات المراسلة") },
                 leadingContent = { Icon(Icons.Default.Info, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
                 modifier = Modifier
@@ -251,7 +326,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             title = { Text(stringResource(R.string.settings_logout)) },
-            text = { Text("هل أنت متأكد من تسجيل الخروج من تطبيق رسيل؟") },
+            text = { Text("هل أنت متأكد من تسجيل الخروج من تطبيق dev؟") },
             confirmButton = {
                 TextButton(
                     onClick = {

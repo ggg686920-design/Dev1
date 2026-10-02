@@ -1,37 +1,40 @@
 <resources>
-    <string name="app_name">رسيل</string>
-    <string name="tagline">تطبيق مراسلة فوري حديث وآمن</string>
+    <string name="app_name">dev</string>
+    <string name="tagline">تطبيق مراسلة فوري حديث وفائق التخصيص</string>
 
     <!-- Navigation & Tabs -->
     <string name="nav_chats">المحادثات</string>
     <string name="nav_groups">المجموعات</string>
+    <string name="nav_contacts">جهات الاتصال</string>
     <string name="nav_search">البحث</string>
+    <string name="nav_customization">التخصيص</string>
     <string name="nav_settings">الإعدادات</string>
 
     <!-- Auth -->
-    <string name="login_title">مرحباً بعودتك</string>
-    <string name="login_subtitle">سجّل الدخول للبقاء على اتصال مع جهات اتصالك</string>
+    <string name="login_title">مرحباً بك في dev</string>
+    <string name="login_subtitle">سجّل الدخول للبقاء على اتصال وتخصيص تجربتك بالكامل</string>
     <string name="register_title">إنشاء حساب جديد</string>
-    <string name="register_subtitle">انضم إلى رسيل لتجربة مراسلة سريعة ومحمية</string>
+    <string name="register_subtitle">انضم إلى dev لتجربة مراسلة سريعة ومحمية وتخصيص لا نهائي</string>
     <string name="email_label">البريد الإلكتروني</string>
     <string name="password_label">كلمة المرور</string>
-    <string name="username_label">اسم المستخدم (مثل username@)</string>
+    <string name="username_label">اسم المستخدم (مثل dev_user@)</string>
     <string name="display_name_label">الاسم الظاهر</string>
     <string name="bio_label">نبذة شخصية</string>
     <string name="btn_login">تسجيل الدخول</string>
     <string name="btn_register">إنشاء الحساب</string>
     <string name="no_account_prompt">ليس لديك حساب؟ إنشاء حساب جديد</string>
     <string name="have_account_prompt">لديك حساب بالفعل؟ تسجيل الدخول</string>
-    <string name="backend_config_notice">إعدادات الاتصال بخادم Supabase</string>
+    <string name="backend_config_notice">إعدادات الاتصال السحابي (اختياري)</string>
     <string name="backend_config_title">إعدادات الخادم</string>
     <string name="supabase_url_label">رابط مشروع Supabase</string>
     <string name="supabase_key_label">مفتاح Anon العام</string>
     <string name="save_config">حفظ الإعدادات</string>
+    <string name="btn_try_demo">دخول تجريبي فوري</string>
 
     <!-- Chat & Home -->
-    <string name="search_hint">ابحث عن مستخدمين أو محادثات…</string>
+    <string name="search_hint">ابحث عن مستخدمين، محادثات أو رسائل…</string>
     <string name="empty_chats_title">لا توجد محادثات حتى الآن</string>
-    <string name="empty_chats_subtitle">ابدأ محادثة جديدة عبر البحث عن مستخدم</string>
+    <string name="empty_chats_subtitle">ابدأ محادثة جديدة أو استكشف مركز تخصيص dev</string>
     <string name="new_chat">محادثة جديدة</string>
     <string name="new_group">مجموعة جديدة</string>
     <string name="type_message_hint">اكتب رسالة…</string>
@@ -56,13 +59,19 @@
     <string name="status_read">تمت القراءة</string>
 
     <!-- Attachments -->
-    <string name="attach_image">صورة</string>
-    <string name="attach_file">ملف</string>
+    <string name="attach_image">صور وفيديو</string>
+    <string name="attach_file">مستند</string>
     <string name="attach_audio">تسجيل صوتي</string>
+    <string name="attach_location">الموقع</string>
+    <string name="attach_contact">جهة اتصال</string>
     <string name="recording_audio">جارٍ تسجيل مقطع صوتي…</string>
     <string name="tap_to_stop">انقر للإرسال</string>
     <string name="cancel">إلغاء</string>
     <string name="save">حفظ</string>
+    <string name="apply">تطبيق</string>
+    <string name="preview">معاينة حية</string>
+    <string name="reset_default">إعادة التعيين</string>
+    <string name="surprise_me">فاجئني 🎲</string>
 
     <!-- Groups -->
     <string name="group_name_label">اسم المجموعة</string>
@@ -88,12 +97,13 @@
     <!-- Settings -->
     <string name="settings_title">الإعدادات</string>
     <string name="settings_account">الحساب</string>
+    <string name="settings_customization">مركز التخصيص الفائق (90%)</string>
     <string name="settings_privacy">الخصوصية</string>
     <string name="settings_notifications">الإشعارات</string>
-    <string name="settings_appearance">المظهر</string>
+    <string name="settings_appearance">المظهر والثيمات</string>
     <string name="settings_language">اللغة</string>
     <string name="settings_storage">التخزين والبيانات</string>
-    <string name="settings_about">عن تطبيق رسيل</string>
+    <string name="settings_about">عن تطبيق dev</string>
     <string name="settings_logout">تسجيل الخروج</string>
     <string name="edit_profile">تعديل الملف الشخصي</string>
     <string name="appearance_light">فاتح</string>
@@ -105,7 +115,20 @@
     <string name="privacy_blocked_users">جهات الاتصال المحظورة</string>
     <string name="visibility_everyone">الجميع</string>
     <string name="visibility_nobody">لا أحد</string>
-    <string name="version_info">الإصدار %1$s (البناء %2$d)</string>
+    <string name="version_info">dev الإصدار 2.0 (البناء 2000)</string>
+
+    <!-- Customization Studio -->
+    <string name="customization_center_title">استوديو التخصيص</string>
+    <string name="customization_center_subtitle">خصّص حتى 90% من مظهر واجهة تطبيق dev</string>
+    <string name="tab_themes">الثيمات</string>
+    <string name="tab_store">متجر الثيمات</string>
+    <string name="tab_wallpapers">الخلفيات</string>
+    <string name="tab_bubbles">فقاعات المحادثة</string>
+    <string name="tab_icons">أنماط الأيقونات</string>
+    <string name="tab_typography">الخطوط والنصوص</string>
+    <string name="tab_effects">المؤثرات والحركات</string>
+    <string name="tab_nav_buttons">العناصر والأزرار</string>
+    <string name="tab_my_assets">حزمي الخاصة</string>
 
     <!-- Common Messages & Validation -->
     <string name="err_empty_field">هذا الحقل مطلوب</string>
@@ -114,4 +137,7 @@
     <string name="err_invalid_username">يجب أن يحتوي اسم المستخدم على حروف وأرقام فقط</string>
     <string name="err_connection">تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول ثانية.</string>
     <string name="msg_copied">تم النسخ إلى الحافظة</string>
+    <string name="theme_applied">تم تطبيق الثيم بنجاح!</string>
+    <string name="theme_exported">تم تصدير الثيم بصيغة .devtheme</string>
+    <string name="theme_imported">تم استيراد الثيم بنجاح</string>
 </resources>

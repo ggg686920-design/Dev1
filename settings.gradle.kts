@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Raseel"
+rootProject.name = "dev"
 
 include(":app")

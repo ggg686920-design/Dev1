@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -64,6 +66,8 @@ enum class EmojiCategory(val titleAr: String, val titleEn: String, val icon: Str
 @Composable
 fun EmojiPickerSheet(
     onEmojiSelected: (String) -> Unit,
+    onBackspace: () -> Unit = {},
+    onSwitchToKeyboard: () -> Unit = {},
     onDismissRequest: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -91,7 +95,7 @@ fun EmojiPickerSheet(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .navigationBarsPadding()
         ) {
-            // Header
+            // Header with Keyboard switch, Backspace, and Done buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -102,8 +106,45 @@ fun EmojiPickerSheet(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                IconButton(onClick = onDismissRequest) {
-                    Icon(Icons.Default.Close, contentDescription = "Close")
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    IconButton(
+                        onClick = onBackspace,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Backspace,
+                            contentDescription = "حذف الرمز الأخير",
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onSwitchToKeyboard,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Keyboard,
+                            contentDescription = "التبديل للوحة المفاتيح",
+                            modifier = Modifier.size(22.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onDismissRequest,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "إغلاق",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 
@@ -146,7 +187,7 @@ fun EmojiPickerSheet(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Emoji Grid
+            // Emoji Grid: Continuous smooth selection without abrupt sheet dismissing
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 44.dp),
                 modifier = Modifier
@@ -161,7 +202,6 @@ fun EmojiPickerSheet(
                             .clip(CircleShape)
                             .clickable {
                                 onEmojiSelected(emoji)
-                                onDismissRequest()
                             },
                         contentAlignment = Alignment.Center
                     ) {

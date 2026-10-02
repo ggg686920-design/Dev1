@@ -18,6 +18,10 @@ class AppContainer(val context: Context) {
     val audioPlayer: AudioPlayerManager by lazy { AudioPlayerManager() }
     val demoDataManager: com.example.core.demo.DemoDataManager by lazy { com.example.core.demo.DemoDataManager() }
     val settingsManager: com.example.core.settings.AppSettingsManager by lazy { com.example.core.settings.AppSettingsManager(context) }
+    val customizationManager: com.example.core.customization.CustomizationManager by lazy { com.example.core.customization.CustomizationManager(context) }
+    val assetManager: com.example.core.assets.AssetManager by lazy { com.example.core.assets.AssetManager(context) }
+    val chatOverridesManager: com.example.core.customization.ChatThemeOverridesManager by lazy { com.example.core.customization.ChatThemeOverridesManager(context) }
+    val themeHistoryManager: com.example.core.customization.ThemeHistoryManager by lazy { com.example.core.customization.ThemeHistoryManager(customizationManager.currentTheme.value) }
 
     val authRepository: AuthRepository by lazy { AuthRepository(client, config, demoDataManager) }
     val profileRepository: ProfileRepository by lazy { ProfileRepository(client, config, demoDataManager) }

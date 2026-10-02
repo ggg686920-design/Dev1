@@ -34,6 +34,7 @@ import com.example.presentation.profile.EditProfileScreen
 import com.example.presentation.profile.ProfileViewModel
 import com.example.presentation.search.SearchViewModel
 import com.example.presentation.settings.*
+import com.example.presentation.customization.*
 import com.example.ui.theme.RaseelTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,10 +49,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val appSettings by container.settingsManager.settings.collectAsState()
+            val themeConfig by container.customizationManager.currentTheme.collectAsState()
             val layoutDirection = if (appSettings.isArabic) LayoutDirection.Rtl else LayoutDirection.Ltr
 
             CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
-                RaseelTheme(appSettings = appSettings) {
+                RaseelTheme(appSettings = appSettings, themeConfig = themeConfig) {
                     val navController = rememberNavController()
 
                     val isLoggedIn = container.authRepository.isLoggedIn()
@@ -131,6 +133,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToEditProfile = {
                                     navController.navigate("edit_profile")
+                                },
+                                onNavigateToCustomizationStudio = {
+                                    navController.navigate("customization_studio")
                                 },
                                 onNavigateToPrivacy = {
                                     navController.navigate("privacy_settings")
@@ -268,6 +273,63 @@ class MainActivity : ComponentActivity() {
 
                         composable("about_app") {
                             AboutScreen(
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("customization_studio") {
+                            CustomizationCenterScreen(
+                                customizationManager = container.customizationManager,
+                                onNavigateBack = { navController.popBackStack() },
+                                onNavigateToOnlineStore = { navController.navigate("online_asset_store") },
+                                onNavigateToHomeDesigner = { navController.navigate("home_screen_designer") },
+                                onNavigateToChatDesigner = { navController.navigate("advanced_chat_designer") },
+                                onNavigateToColorTypographyStudio = { navController.navigate("color_typography_studio") },
+                                onNavigateToIconStore = { navController.navigate("icon_store_and_editor") },
+                                onNavigateToWallpaperStore = { navController.navigate("wallpaper_store_and_editor") }
+                            )
+                        }
+
+                        composable("online_asset_store") {
+                            OnlineAssetStoreScreen(
+                                assetManager = container.assetManager,
+                                customizationManager = container.customizationManager,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("home_screen_designer") {
+                            HomeScreenDesignerScreen(
+                                customizationManager = container.customizationManager,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("advanced_chat_designer") {
+                            AdvancedChatDesignerScreen(
+                                customizationManager = container.customizationManager,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("color_typography_studio") {
+                            ColorAndTypographyStudioScreen(
+                                customizationManager = container.customizationManager,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("icon_store_and_editor") {
+                            IconStoreAndEditorScreen(
+                                customizationManager = container.customizationManager,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("wallpaper_store_and_editor") {
+                            WallpaperStoreAndEditorScreen(
+                                customizationManager = container.customizationManager,
+                                chatOverridesManager = container.chatOverridesManager,
                                 onNavigateBack = { navController.popBackStack() }
                             )
                         }

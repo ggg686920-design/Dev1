@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.core.common.DateUtils
+import com.example.core.customization.*
 import com.example.data.models.Conversation
 import com.example.data.models.ConversationType
 import com.example.data.models.MessageType
@@ -44,6 +45,7 @@ import com.example.presentation.profile.ProfileViewModel
 import com.example.presentation.search.SearchScreen
 import com.example.presentation.search.SearchViewModel
 import com.example.presentation.settings.SettingsScreen
+import com.example.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +61,7 @@ fun HomeScreen(
     onOpenConversation: (String) -> Unit,
     onNavigateToCreateGroup: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
+    onNavigateToCustomizationStudio: () -> Unit,
     onNavigateToPrivacy: () -> Unit,
     onNavigateToAppearance: () -> Unit,
     onNavigateToStorage: () -> Unit,
@@ -113,7 +116,7 @@ fun HomeScreen(
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
                                     Text(
-                                        text = "v1.000",
+                                        text = "v2.0",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.Bold,
@@ -123,6 +126,12 @@ fun HomeScreen(
                             }
                         },
                         actions = {
+                            IconButton(
+                                onClick = onNavigateToCustomizationStudio,
+                                modifier = Modifier.testTag("btn_top_customization")
+                            ) {
+                                Icon(Icons.Default.Palette, contentDescription = "Customize", tint = MaterialTheme.colorScheme.primary)
+                            }
                             IconButton(
                                 onClick = { selectedTab = 2 },
                                 modifier = Modifier.testTag("btn_top_search")
@@ -188,6 +197,7 @@ fun HomeScreen(
             }
         },
         bottomBar = {
+            val iconStyle = LocalIconStyle.current
             NavigationBar(
                 modifier = Modifier
                     .windowInsetsPadding(WindowInsets.navigationBars)
@@ -196,28 +206,28 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.ChatBubble, contentDescription = null) },
+                    icon = { ThemedIcon(AppIconAction.CHATS, iconStyle, size = 22.dp) },
                     label = { Text("المحادثات") },
                     modifier = Modifier.testTag("nav_item_chats")
                 )
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.Contacts, contentDescription = null) },
+                    icon = { ThemedIcon(AppIconAction.CONTACTS, iconStyle, size = 22.dp) },
                     label = { Text("جهات الاتصال") },
                     modifier = Modifier.testTag("nav_item_contacts")
                 )
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    icon = { ThemedIcon(AppIconAction.SEARCH, iconStyle, size = 22.dp) },
                     label = { Text(stringResource(R.string.nav_search)) },
                     modifier = Modifier.testTag("nav_item_search")
                 )
                 NavigationBarItem(
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 },
-                    icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+                    icon = { ThemedIcon(AppIconAction.SETTINGS, iconStyle, size = 22.dp) },
                     label = { Text(stringResource(R.string.nav_settings)) },
                     modifier = Modifier.testTag("nav_item_settings")
                 )
@@ -298,6 +308,7 @@ fun HomeScreen(
                         onToggleLanguage = onToggleLanguage,
                         onNavigateBack = { selectedTab = 0 },
                         onNavigateToEditProfile = onNavigateToEditProfile,
+                        onNavigateToCustomizationStudio = onNavigateToCustomizationStudio,
                         onNavigateToPrivacy = onNavigateToPrivacy,
                         onNavigateToAppearance = onNavigateToAppearance,
                         onNavigateToStorage = onNavigateToStorage,
@@ -566,17 +577,25 @@ fun ConversationRowItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    Row(
+    val cardRadius = LocalThemeConfig.current.cardRadiusDp.dp
+    Card(
+        shape = RoundedCornerShape(cardRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 3.dp)
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .testTag("conversation_row_${conversation.id}"),
-        verticalAlignment = Alignment.CenterVertically
+            .testTag("conversation_row_${conversation.id}")
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
         RaseelAvatar(
             name = conversation.title,
             avatarUrl = conversation.avatarUrl,
@@ -689,4 +708,5 @@ fun ConversationRowItem(
             }
         }
     }
+}
 }

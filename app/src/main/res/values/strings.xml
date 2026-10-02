@@ -1,37 +1,40 @@
 <resources>
-    <string name="app_name">Raseel</string>
-    <string name="tagline">Modern Realtime Messaging</string>
+    <string name="app_name">dev</string>
+    <string name="tagline">Next-Gen Realtime Messaging &amp; Ultra-Customizable Experience</string>
 
     <!-- Navigation & Tabs -->
     <string name="nav_chats">Chats</string>
     <string name="nav_groups">Groups</string>
+    <string name="nav_contacts">Contacts</string>
     <string name="nav_search">Search</string>
+    <string name="nav_customization">Customize</string>
     <string name="nav_settings">Settings</string>
 
     <!-- Auth -->
-    <string name="login_title">Welcome Back</string>
-    <string name="login_subtitle">Sign in to stay connected with your contacts</string>
+    <string name="login_title">Welcome to dev</string>
+    <string name="login_subtitle">Sign in to stay connected and customize your space</string>
     <string name="register_title">Create Account</string>
-    <string name="register_subtitle">Join Raseel for secure and fast messaging</string>
+    <string name="register_subtitle">Join dev for secure, fast messaging with endless styling</string>
     <string name="email_label">Email</string>
     <string name="password_label">Password</string>
-    <string name="username_label">Username (e.g. @username)</string>
+    <string name="username_label">Username (e.g. @developer)</string>
     <string name="display_name_label">Display Name</string>
     <string name="bio_label">Bio</string>
     <string name="btn_login">Sign In</string>
     <string name="btn_register">Create Account</string>
     <string name="no_account_prompt">Don\'t have an account? Sign Up</string>
     <string name="have_account_prompt">Already have an account? Sign In</string>
-    <string name="backend_config_notice">Configure Supabase connection settings</string>
-    <string name="backend_config_title">Backend Configuration</string>
+    <string name="backend_config_notice">Optional Backend Configuration (Supabase or Cloud)</string>
+    <string name="backend_config_title">Cloud Config</string>
     <string name="supabase_url_label">Supabase Project URL</string>
     <string name="supabase_key_label">Supabase Anon Public Key</string>
     <string name="save_config">Save Configuration</string>
+    <string name="btn_try_demo">Instant Demo Mode</string>
 
     <!-- Chat & Home -->
-    <string name="search_hint">Search users or chats…</string>
+    <string name="search_hint">Search users, chats or messages…</string>
     <string name="empty_chats_title">No conversations yet</string>
-    <string name="empty_chats_subtitle">Start a new chat by searching for a user</string>
+    <string name="empty_chats_subtitle">Start a new chat or explore dev customization</string>
     <string name="new_chat">New Chat</string>
     <string name="new_group">New Group</string>
     <string name="type_message_hint">Type a message…</string>
@@ -56,13 +59,19 @@
     <string name="status_read">Read</string>
 
     <!-- Attachments -->
-    <string name="attach_image">Image</string>
-    <string name="attach_file">File</string>
+    <string name="attach_image">Photo &amp; Video</string>
+    <string name="attach_file">Document</string>
     <string name="attach_audio">Voice Note</string>
+    <string name="attach_location">Location</string>
+    <string name="attach_contact">Contact Card</string>
     <string name="recording_audio">Recording voice note…</string>
     <string name="tap_to_stop">Tap to send</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+    <string name="apply">Apply</string>
+    <string name="preview">Live Preview</string>
+    <string name="reset_default">Reset Default</string>
+    <string name="surprise_me">Surprise Me 🎲</string>
 
     <!-- Groups -->
     <string name="group_name_label">Group Name</string>
@@ -88,12 +97,13 @@
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_account">Account</string>
+    <string name="settings_customization">Customization Center (90%)</string>
     <string name="settings_privacy">Privacy</string>
     <string name="settings_notifications">Notifications</string>
-    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance">Appearance &amp; Themes</string>
     <string name="settings_language">Language</string>
     <string name="settings_storage">Storage &amp; Data</string>
-    <string name="settings_about">About Raseel</string>
+    <string name="settings_about">About dev</string>
     <string name="settings_logout">Log Out</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="appearance_light">Light</string>
@@ -105,7 +115,20 @@
     <string name="privacy_blocked_users">Blocked Contacts</string>
     <string name="visibility_everyone">Everyone</string>
     <string name="visibility_nobody">Nobody</string>
-    <string name="version_info">Version %1$s (Build %2$d)</string>
+    <string name="version_info">dev v2.0 (Build 2000)</string>
+
+    <!-- Customization Studio -->
+    <string name="customization_center_title">Customization Studio</string>
+    <string name="customization_center_subtitle">Personalize up to 90% of your dev interface</string>
+    <string name="tab_themes">Themes</string>
+    <string name="tab_store">Online Store</string>
+    <string name="tab_wallpapers">Wallpapers</string>
+    <string name="tab_bubbles">Bubbles</string>
+    <string name="tab_icons">Icon Styles</string>
+    <string name="tab_typography">Typography</string>
+    <string name="tab_effects">Effects &amp; Anim</string>
+    <string name="tab_nav_buttons">UI Elements</string>
+    <string name="tab_my_assets">My Assets</string>
 
     <!-- Common Messages & Validation -->
     <string name="err_empty_field">This field cannot be empty</string>
@@ -114,4 +137,7 @@
     <string name="err_invalid_username">Username must contain letters, numbers, or underscores</string>
     <string name="err_connection">Connection error. Please check your network and try again.</string>
     <string name="msg_copied">Copied to clipboard</string>
+    <string name="theme_applied">Theme applied successfully!</string>
+    <string name="theme_exported">Theme exported to .devtheme format</string>
+    <string name="theme_imported">Theme imported successfully</string>
 </resources>

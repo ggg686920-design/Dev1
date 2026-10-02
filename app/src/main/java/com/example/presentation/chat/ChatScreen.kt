@@ -12,6 +12,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,9 +35,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -48,11 +52,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.R
 import com.example.core.common.DateUtils
+import com.example.core.customization.*
 import com.example.data.models.*
 import com.example.presentation.common.*
-import com.example.ui.theme.LocalBubbleRadius
-import com.example.ui.theme.LocalChatWallpaper
-import com.example.ui.theme.ReadReceiptBlue
+import com.example.ui.theme.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,8 +70,8 @@ fun ChatScreen(
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    val bubbleRadius = LocalBubbleRadius.current
-    val wallpaper = LocalChatWallpaper.current
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var inputText by remember { mutableStateOf("") }
     var selectedMessageForMenu by remember { mutableStateOf<Message?>(null) }
@@ -177,6 +180,7 @@ fun ChatScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             if (uiState.isMultiSelectMode) {
                 // Multi-Select Top Bar
@@ -357,13 +361,22 @@ fun ChatScreen(
             }
         }
     ) { innerPadding ->
-        Column(
+        val themeConfig = LocalThemeConfig.current
+        val activeWallpaper = remember(themeConfig.wallpaperId) {
+            ThemePresets.builtInWallpapers.find { it.id == themeConfig.wallpaperId } ?: ThemePresets.builtInWallpapers.first()
+        }
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color(android.graphics.Color.parseColor(wallpaper.backgroundHex)))
+                .padding(top = innerPadding.calculateTopPadding())
                 .imePadding()
         ) {
+            WallpaperRenderer(
+                wallpaperItem = activeWallpaper,
+                reduceMotion = themeConfig.effects.reduceMotion
+            ) {
+                Column(modifier = Modifier.fillMaxSize()) {
             // Pinned Message Banner
             if (pinnedMessage != null) {
                 Surface(
@@ -445,7 +458,6 @@ fun ChatScreen(
                             isSelected = isSelected,
                             isAudioPlaying = uiState.isAudioPlaying && uiState.playingAudioUrl == message.attachmentUrl,
                             audioProgress = if (uiState.playingAudioUrl == message.attachmentUrl) uiState.audioProgress else 0f,
-                            bubbleRadius = bubbleRadius,
                             onPlayAudio = { url -> viewModel.toggleAudioPlayback(url) },
                             onImageClick = { url -> previewImageUrl = url },
                             onReactionClick = { emoji -> viewModel.toggleReaction(message, emoji) },
@@ -617,7 +629,10 @@ fun ChatScreen(
                     ) {
                         // Emoji Picker Button
                         IconButton(
-                            onClick = { showEmojiSheet = true },
+                            onClick = {
+                                keyboardController?.hide()
+                                showEmojiSheet = true
+                            },
                             modifier = Modifier.testTag("btn_emoji_picker")
                         ) {
                             Text("😀", fontSize = 22.sp)
@@ -625,7 +640,10 @@ fun ChatScreen(
 
                         // Attachment Button
                         IconButton(
-                            onClick = { showAttachmentSheet = true },
+                            onClick = {
+                                keyboardController?.hide()
+                                showAttachmentSheet = true
+                            },
                             modifier = Modifier.testTag("btn_attachment_sheet")
                         ) {
                             Icon(
@@ -648,6 +666,7 @@ fun ChatScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 4.dp)
+                                .focusRequester(focusRequester)
                                 .testTag("input_chat_message")
                         )
 
@@ -697,6 +716,8 @@ fun ChatScreen(
                 }
             }
         }
+            }
+        }
     }
 
     // Attachment Picker Modal Bottom Sheet
@@ -732,6 +753,22 @@ fun ChatScreen(
             onEmojiSelected = { emoji ->
                 inputText += emoji
                 viewModel.saveDraft(inputText)
+            },
+            onBackspace = {
+                if (inputText.isNotEmpty()) {
+                    val lastCodePoint = inputText.codePointBefore(inputText.length)
+                    val charCount = java.lang.Character.charCount(lastCodePoint)
+                    inputText = inputText.dropLast(charCount)
+                    viewModel.saveDraft(inputText)
+                }
+            },
+            onSwitchToKeyboard = {
+                showEmojiSheet = false
+                coroutineScope.launch {
+                    kotlinx.coroutines.delay(80)
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                }
             },
             onDismissRequest = { showEmojiSheet = false }
         )
@@ -935,34 +972,56 @@ fun MessageBubble(
     isSelected: Boolean,
     isAudioPlaying: Boolean,
     audioProgress: Float,
-    bubbleRadius: androidx.compose.ui.unit.Dp,
     onPlayAudio: (String) -> Unit,
     onImageClick: (String) -> Unit,
     onReactionClick: (String) -> Unit,
     onLongClick: () -> Unit,
     onClick: () -> Unit
 ) {
+    val bubbleConfig = LocalBubbleConfig.current
+    val incColor = parseHexColor(bubbleConfig.incomingBgHex, MaterialTheme.colorScheme.surfaceVariant)
+    val outColor = parseHexColor(bubbleConfig.outgoingBgHex, MaterialTheme.colorScheme.primary)
+    val incTextColor = parseHexColor(bubbleConfig.incomingTextHex, MaterialTheme.colorScheme.onSurfaceVariant)
+    val outTextColor = parseHexColor(bubbleConfig.outgoingTextHex, MaterialTheme.colorScheme.onPrimary)
+
     val bubbleColor = when {
         isSelected -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f)
         isHighlighted -> Color(0xFFFEF08A)
-        isMine -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.surfaceVariant
+        isMine -> outColor
+        else -> incColor
     }
 
     val textColor = when {
         isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
         isHighlighted -> Color.Black
-        isMine -> MaterialTheme.colorScheme.onPrimary
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
+        isMine -> outTextColor
+        else -> incTextColor
     }
 
     val alignment = if (isMine) Alignment.CenterEnd else Alignment.CenterStart
-    val shape = RoundedCornerShape(
-        topStart = bubbleRadius,
-        topEnd = bubbleRadius,
-        bottomStart = if (isMine) bubbleRadius else 4.dp,
-        bottomEnd = if (isMine) 4.dp else bubbleRadius
-    )
+    val r = bubbleConfig.radiusDp.dp
+    val shape = when (bubbleConfig.shape) {
+        BubbleShape.PILL -> RoundedCornerShape(r)
+        BubbleShape.SHARP -> RoundedCornerShape(if (bubbleConfig.radiusDp > 0) r else 0.dp)
+        BubbleShape.CHAT_TAIL -> RoundedCornerShape(
+            topStart = r,
+            topEnd = r,
+            bottomStart = if (isMine) r else 2.dp,
+            bottomEnd = if (isMine) 2.dp else r
+        )
+        BubbleShape.MODERN_LEAF -> RoundedCornerShape(
+            topStart = r,
+            topEnd = if (isMine) 4.dp else r,
+            bottomStart = if (isMine) r else 4.dp,
+            bottomEnd = r
+        )
+        BubbleShape.ROUNDED -> RoundedCornerShape(
+            topStart = r,
+            topEnd = r,
+            bottomStart = if (isMine) r else 4.dp,
+            bottomEnd = if (isMine) 4.dp else r
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -972,8 +1031,10 @@ fun MessageBubble(
     ) {
         Column(horizontalAlignment = if (isMine) Alignment.End else Alignment.Start) {
             Surface(
-                color = bubbleColor,
+                color = bubbleColor.copy(alpha = bubbleConfig.transparency),
                 shape = shape,
+                shadowElevation = if (bubbleConfig.hasShadow) 2.dp else 0.dp,
+                border = if (bubbleConfig.hasBorder) BorderStroke(bubbleConfig.borderWidthDp.dp, parseHexColor(bubbleConfig.borderColorHex)) else null,
                 tonalElevation = 1.dp,
                 modifier = Modifier
                     .widthIn(max = 310.dp)
@@ -982,7 +1043,7 @@ fun MessageBubble(
                         onLongClick = onLongClick
                     )
             ) {
-                Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                Column(modifier = Modifier.padding(horizontal = bubbleConfig.paddingDp.dp, vertical = (bubbleConfig.paddingDp * 0.7f).dp)) {
                     // Forwarded label
                     if (message.isForwarded) {
                         Row(

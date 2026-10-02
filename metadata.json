@@ -1,6 +1,6 @@
 {
-  "name": "Raseel",
-  "description": "تطبيق مراسلة فوري حديث وآمن مع محادثات فردية وجماعية ورسائل صوتية ووسائط واتصال سحابي.",
+  "name": "dev",
+  "description": "dev - تطبيق مراسلة وتواصل حديث ومتقدم وفائق التخصيص مع محادثات فردية وجماعية ومكتبة ثيمات ضخمة.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
