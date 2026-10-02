@@ -78,7 +78,7 @@ class ProfileViewModel(private val container: AppContainer) : ViewModel() {
                 val mime = context.contentResolver.getType(uri) ?: "image/jpeg"
                 val name = "avatar_${System.currentTimeMillis()}.jpg"
 
-                when (val res = container.storageRepository.uploadMedia("avatars", name, bytes, mime)) {
+                when (val res = container.storageRepository.uploadMedia("avatars", name, bytes, mime, container.authRepository.getCurrentUserId())) {
                     is Resource.Success -> onUploaded(res.data)
                     else -> Unit
                 }

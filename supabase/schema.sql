@@ -77,6 +77,9 @@ CREATE TABLE IF NOT EXISTS public.messages (
     status TEXT NOT NULL DEFAULT 'SENT' CHECK (status IN ('SENT', 'DELIVERED', 'READ')),
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now(),
+    attachment_url TEXT,
+    attachment_name TEXT,
+    attachment_size BIGINT,
     CONSTRAINT check_text_message_has_content CHECK (
         message_type <> 'TEXT' OR (content IS NOT NULL AND length(trim(content)) > 0)
     )

@@ -56,7 +56,8 @@ class SupabaseRealtimeManager(
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 isConnected = true
                 Log.d("SupabaseRealtime", "Connected to Realtime WebSocket")
-                joinMessagesChannel()
+                listOf("messages", "conversations", "conversation_members", "message_receipts", "profiles")
+                    .forEach(::joinTableChannel)
                 startHeartbeat()
             }
 
@@ -80,10 +81,10 @@ class SupabaseRealtimeManager(
         })
     }
 
-    private fun joinMessagesChannel() {
+    private fun joinTableChannel(table: String) {
         val ref = refCounter.getAndIncrement().toString()
         val joinPayload = JSONObject().apply {
-            put("topic", "realtime:public:messages")
+            put("topic", "realtime:public:$table")
             put("event", "phx_join")
             put("ref", ref)
             val payload = JSONObject().apply {
@@ -92,12 +93,7 @@ class SupabaseRealtimeManager(
                         put(JSONObject().apply {
                             put("event", "*")
                             put("schema", "public")
-                            put("table", "messages")
-                        })
-                        put(JSONObject().apply {
-                            put("event", "*")
-                            put("schema", "public")
-                            put("table", "conversations")
+                            put("table", table)
                         })
                     }
                     put("postgres_changes", changes)

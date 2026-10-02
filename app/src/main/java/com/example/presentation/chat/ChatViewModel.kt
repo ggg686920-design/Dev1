@@ -239,7 +239,7 @@ class ChatViewModel(
         if (file.exists() && file.length() > 0) {
             viewModelScope.launch {
                 val bytes = file.readBytes()
-                when (val uploadRes = container.storageRepository.uploadMedia("voice-messages", file.name, bytes, "audio/m4a")) {
+                when (val uploadRes = container.storageRepository.uploadMedia("voice-messages", file.name, bytes, "audio/m4a", conversationId)) {
                     is Resource.Success -> {
                         container.messageRepository.sendMessage(
                             conversationId = conversationId,
@@ -271,7 +271,7 @@ class ChatViewModel(
                 val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
                 val name = "image_${System.currentTimeMillis()}.jpg"
 
-                when (val uploadRes = container.storageRepository.uploadMedia("chat-media", name, bytes, mimeType)) {
+                when (val uploadRes = container.storageRepository.uploadMedia("chat-media", name, bytes, mimeType, conversationId)) {
                     is Resource.Success -> {
                         container.messageRepository.sendMessage(
                             conversationId = conversationId,
@@ -299,7 +299,7 @@ class ChatViewModel(
                 inputStream.close()
                 val mimeType = context.contentResolver.getType(uri) ?: "application/octet-stream"
 
-                when (val uploadRes = container.storageRepository.uploadMedia("attachments", fileName, bytes, mimeType)) {
+                when (val uploadRes = container.storageRepository.uploadMedia("attachments", fileName, bytes, mimeType, conversationId)) {
                     is Resource.Success -> {
                         container.messageRepository.sendMessage(
                             conversationId = conversationId,

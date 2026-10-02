@@ -27,6 +27,6 @@ class AppContainer(val context: Context) {
     val profileRepository: ProfileRepository by lazy { ProfileRepository(client, config, demoDataManager) }
     val chatRepository: ChatRepository by lazy { ChatRepository(client, config, demoDataManager) }
     val messageRepository: MessageRepository by lazy { MessageRepository(client, config, realtime, demoDataManager) }
-    val storageRepository: StorageRepository by lazy { StorageRepository(client) }
+    val storageRepository: StorageRepository by lazy { StorageRepository(client, config) }
     val blockRepository: BlockRepository by lazy { BlockRepository(client, config, demoDataManager) }
 }

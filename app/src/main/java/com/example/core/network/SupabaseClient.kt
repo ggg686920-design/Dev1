@@ -172,6 +172,23 @@ class SupabaseClient(private val config: SupabaseConfig) {
         "${config.getUrl()}/storage/v1/object/public/$bucket/$cleanPath"
     }
 
+    suspend fun createSignedUrl(bucket: String, path: String, expiresInSeconds: Int = 3600): String = withContext(Dispatchers.IO) {
+        val cleanPath = path.removePrefix("/")
+        val request = Request.Builder()
+            .url("${config.getUrl()}/storage/v1/object/sign/$bucket/$cleanPath")
+            .post(JSONObject().put("expiresIn", expiresInSeconds).toString().toRequestBody(jsonMediaType))
+            .build()
+        val response = okHttpClient.newCall(request).execute()
+        val body = response.body?.string().orEmpty()
+        if (!response.isSuccessful) {
+            throw IOException("Storage Sign Error [${response.code}]: ${parseErrorMessage(body, response.code)}")
+        }
+        val signedPath = JSONObject(body).optString("signedURL").ifBlank {
+            throw IOException("Storage returned no signed URL")
+        }
+        if (signedPath.startsWith("http")) signedPath else "${config.getUrl()}/storage/v1${signedPath}"
+    }
+
     // ----------------------------------------------------
     // HELPERS
     // ----------------------------------------------------

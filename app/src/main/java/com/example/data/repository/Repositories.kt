@@ -912,22 +912,29 @@ class MessageRepository(
 }
 
 class StorageRepository(
-    private val client: SupabaseClient
+    private val client: SupabaseClient,
+    private val config: SupabaseConfig
 ) {
     suspend fun uploadMedia(
         bucket: String,
         fileName: String,
         fileBytes: ByteArray,
-        mimeType: String
+        mimeType: String,
+        folder: String? = null
     ): Resource<String> = withContext(Dispatchers.IO) {
         try {
             val extension = fileName.substringAfterLast(".", "")
             val uniqueName = "${UUID.randomUUID()}.$extension"
-            val url = client.uploadFile(bucket, uniqueName, fileBytes, mimeType)
+            val path = listOfNotNull(folder?.trim('/')?.takeIf { it.isNotBlank() }, uniqueName).joinToString("/")
+            val url = if (bucket == "avatars") {
+                client.uploadFile(bucket, path, fileBytes, mimeType)
+            } else {
+                client.uploadFile(bucket, path, fileBytes, mimeType)
+                client.createSignedUrl(bucket, path)
+            }
             Resource.Success(url)
         } catch (e: Exception) {
-            // Local fallback URL for demo/offline
-            Resource.Success("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500")
+            Resource.Error(e.message ?: "Failed to upload file", e)
         }
     }
 }
