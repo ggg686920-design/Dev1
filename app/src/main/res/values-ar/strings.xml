@@ -1,0 +1,117 @@
+<resources>
+    <string name="app_name">رسيل</string>
+    <string name="tagline">تطبيق مراسلة فوري حديث وآمن</string>
+
+    <!-- Navigation & Tabs -->
+    <string name="nav_chats">المحادثات</string>
+    <string name="nav_groups">المجموعات</string>
+    <string name="nav_search">البحث</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Auth -->
+    <string name="login_title">مرحباً بعودتك</string>
+    <string name="login_subtitle">سجّل الدخول للبقاء على اتصال مع جهات اتصالك</string>
+    <string name="register_title">إنشاء حساب جديد</string>
+    <string name="register_subtitle">انضم إلى رسيل لتجربة مراسلة سريعة ومحمية</string>
+    <string name="email_label">البريد الإلكتروني</string>
+    <string name="password_label">كلمة المرور</string>
+    <string name="username_label">اسم المستخدم (مثل username@)</string>
+    <string name="display_name_label">الاسم الظاهر</string>
+    <string name="bio_label">نبذة شخصية</string>
+    <string name="btn_login">تسجيل الدخول</string>
+    <string name="btn_register">إنشاء الحساب</string>
+    <string name="no_account_prompt">ليس لديك حساب؟ إنشاء حساب جديد</string>
+    <string name="have_account_prompt">لديك حساب بالفعل؟ تسجيل الدخول</string>
+    <string name="backend_config_notice">إعدادات الاتصال بخادم Supabase</string>
+    <string name="backend_config_title">إعدادات الخادم</string>
+    <string name="supabase_url_label">رابط مشروع Supabase</string>
+    <string name="supabase_key_label">مفتاح Anon العام</string>
+    <string name="save_config">حفظ الإعدادات</string>
+
+    <!-- Chat & Home -->
+    <string name="search_hint">ابحث عن مستخدمين أو محادثات…</string>
+    <string name="empty_chats_title">لا توجد محادثات حتى الآن</string>
+    <string name="empty_chats_subtitle">ابدأ محادثة جديدة عبر البحث عن مستخدم</string>
+    <string name="new_chat">محادثة جديدة</string>
+    <string name="new_group">مجموعة جديدة</string>
+    <string name="type_message_hint">اكتب رسالة…</string>
+    <string name="send">إرسال</string>
+    <string name="reply">رد</string>
+    <string name="copy">نسخ</string>
+    <string name="edit">تعديل</string>
+    <string name="delete">حذف</string>
+    <string name="delete_for_me">حذف لدي فقط</string>
+    <string name="delete_for_everyone">حذف للجميع</string>
+    <string name="deleted_message_placeholder">تم حذف هذه الرسالة</string>
+    <string name="edited_tag">معدلة</string>
+    <string name="forward">إعادة توجيه</string>
+    <string name="status_online">متصل الآن</string>
+    <string name="status_offline">غير متصل</string>
+    <string name="status_last_seen">آخر ظهور</string>
+    <string name="status_last_seen_recently">آخر ظهور مؤخراً</string>
+
+    <!-- Statuses -->
+    <string name="status_sent">تم الإرسال</string>
+    <string name="status_delivered">تم التسليم</string>
+    <string name="status_read">تمت القراءة</string>
+
+    <!-- Attachments -->
+    <string name="attach_image">صورة</string>
+    <string name="attach_file">ملف</string>
+    <string name="attach_audio">تسجيل صوتي</string>
+    <string name="recording_audio">جارٍ تسجيل مقطع صوتي…</string>
+    <string name="tap_to_stop">انقر للإرسال</string>
+    <string name="cancel">إلغاء</string>
+    <string name="save">حفظ</string>
+
+    <!-- Groups -->
+    <string name="group_name_label">اسم المجموعة</string>
+    <string name="group_members_count">%1$d أعضاء</string>
+    <string name="role_owner">المالك</string>
+    <string name="role_admin">مشرف</string>
+    <string name="role_member">عضو</string>
+    <string name="make_admin">تعيين كمشرف</string>
+    <string name="remove_admin">إلغاء الإشراف</string>
+    <string name="remove_from_group">إزالة من المجموعة</string>
+    <string name="leave_group">مغادرة المجموعة</string>
+    <string name="add_members">إضافة أعضاء</string>
+    <string name="group_info">معلومات المجموعة</string>
+
+    <!-- Actions -->
+    <string name="pin_chat">تثبيت المحادثة</string>
+    <string name="unpin_chat">إلغاء التثبيت</string>
+    <string name="mute_chat">كتم التنبيهات</string>
+    <string name="unmute_chat">إلغاء الكتم</string>
+    <string name="block_user">حظر المستخدم</string>
+    <string name="unblock_user">إلغاء الحظر</string>
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_account">الحساب</string>
+    <string name="settings_privacy">الخصوصية</string>
+    <string name="settings_notifications">الإشعارات</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_storage">التخزين والبيانات</string>
+    <string name="settings_about">عن تطبيق رسيل</string>
+    <string name="settings_logout">تسجيل الخروج</string>
+    <string name="edit_profile">تعديل الملف الشخصي</string>
+    <string name="appearance_light">فاتح</string>
+    <string name="appearance_dark">داكن</string>
+    <string name="appearance_system">حسب النظام</string>
+    <string name="privacy_last_seen">ظهور آخر نشاط</string>
+    <string name="privacy_profile_photo">ظهور صورة الحساب</string>
+    <string name="privacy_read_receipts">مؤشرات قراءة الرسائل</string>
+    <string name="privacy_blocked_users">جهات الاتصال المحظورة</string>
+    <string name="visibility_everyone">الجميع</string>
+    <string name="visibility_nobody">لا أحد</string>
+    <string name="version_info">الإصدار %1$s (البناء %2$d)</string>
+
+    <!-- Common Messages & Validation -->
+    <string name="err_empty_field">هذا الحقل مطلوب</string>
+    <string name="err_invalid_email">يرجى إدخال بريد إلكتروني صالح</string>
+    <string name="err_short_password">يجب أن تكون كلمة المرور 6 أحرف على الأقل</string>
+    <string name="err_invalid_username">يجب أن يحتوي اسم المستخدم على حروف وأرقام فقط</string>
+    <string name="err_connection">تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول ثانية.</string>
+    <string name="msg_copied">تم النسخ إلى الحافظة</string>
+</resources>
